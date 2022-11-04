@@ -1,0 +1,70 @@
+---
+title: "World population by country in 2020"
+author: "Phuong Tran"
+date: "November 4 2022"
+output: html_document
+editor_options: 
+  markdown: 
+    wrap: sentence
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Goal
+
+I would like to collect and present the data about the population of all countries in the world in 2020 by extracting the information from <https://www.worldometers.info/world-population/population-by-country/>.
+
+# Challenge
+
+I think there is really no challenge with this data scraping because the website is clean and well-organised.
+
+# Solution
+
+First, install a handful of classic R packages and load their libraries:
+
+-   `rvest` for web-scraping
+-   `dplyr` for data-wrangling
+-   `tidyr` for data transformation
+-   `stringr` for string manipulation
+-   `janitor` for clean headers that your OCD will love you for
+
+```{r libraries, warning=FALSE, message=FALSE}
+library(rvest)
+library(dplyr)
+library(tidyr)
+library(stringr)
+library(janitor)
+```
+
+## Scrape the data
+
+First, let's grape the website:
+
+```{r url}
+url <- "https://www.worldometers.info/world-population/population-by-country/"
+url_html <- read_html(url)
+```
+
+Next, let's extract the whole HTML table:
+
+```{r scrape-table}
+whole_table <- url_html %>% 
+ html_nodes("table") %>%
+ html_table()  
+str(whole_table)
+whole_table[[1]]
+whole_table
+```
+
+Finally, let's unlist `whole_table` to transform it into a usable dataframe:
+
+```{r html-to-df}
+new_table <- do.call(cbind,unlist(whole_table, recursive = FALSE)) 
+head(new_table)
+```
+
+Now we are done with the scraping and have the data from one database sheet in a dataframe.
+
+
